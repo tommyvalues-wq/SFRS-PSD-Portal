@@ -24,7 +24,34 @@ app.get('/auth/roblox/callback', async (req,res,next)=>{ try{ const profile=awai
 app.post('/demo-login', (req,res)=>{ const db=load(); let user=db.users.find(u=>u.roblox_id==='demo-owner'); if(!user){ user={id:nextId(db,'users'),roblox_id:'demo-owner',username:'Demo Owner',display_name:'Demo Owner',role:'owner',is_allowed:1,created_at:now(),updated_at:now()}; db.users.push(user); save(db); } req.session.userId=user.id; res.redirect('/dashboard'); });
 app.post('/logout',(req,res)=>req.session.destroy(()=>res.redirect('/')));
 app.get('/dashboard', requireLogin, (req,res)=>{ const db=load(); const stats={firefighters:db.firefighters.length,cases:db.disciplinary_actions.length,pst:db.users.filter(u=>['owner','pst'].includes(u.role)).length}; res.render('dashboard',{title:'Dashboard',stats,recent:db.audit_log.slice(0,8)}); });
-app.get('/firefighters', requireLogin, (req,res)=>{ const db=load(); res.render('firefighters',{title:'Firefighters', firefighters:db.firefighters.sort((a,b)=>a.name.localeCompare(b.name))}); });
+app.get('/firefighters', requireLogin, (req,res)=>{
+
+  const db = load();
+
+  const q = (req.query.q || "").toLowerCase().trim();
+
+  let firefighters = db.firefighters;
+
+  if(q){
+    firefighters = firefighters.filter(f =>
+      (f.name || "").toLowerCase().includes(q) ||
+      (f.roblox_id || "").toLowerCase().includes(q) ||
+      (f.rank || "").toLowerCase().includes(q) ||
+      (f.station || "").toLowerCase().includes(q) ||
+      (f.command_level || "").toLowerCase().includes(q) ||
+      (f.status || "").toLowerCase().includes(q)
+    );
+  }
+
+  firefighters.sort((a,b)=>a.name.localeCompare(b.name));
+
+  res.render('firefighters',{
+    title:'Firefighters',
+    firefighters,
+    q
+  });
+
+});
 app.get('/firefighters/new', requirePST, (req,res)=>res.render('firefighter-form',{title:'Add Firefighter', f:{}}));
 app.post('/firefighters', requirePST, (req,res)=>{
   const r = req.body;
