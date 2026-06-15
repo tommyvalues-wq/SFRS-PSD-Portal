@@ -1,0 +1,1 @@
+{"name":"sfrs-portal-node24","version":"1.0.0","description":"Staffordshire Fire and Rescue ROBLOX staff portal demo","main":"server.js","scripts":{"start":"node server.js","dev":"node server.js"},"dependencies":{"dotenv":"latest","ejs":"latest","express":"latest","express-session":"latest","helmet":"latest","openid-client":"^5.7.1"},"engines":{"node":">=20"}}
