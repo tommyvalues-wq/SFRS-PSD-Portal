@@ -1,1 +1,43 @@
-<%- include('layout-top') %><section class="page"><div class="actions"><h2>Firefighters</h2><% if(user && ['owner','pst'].includes(user.role)){ %><a class="btn" href="/firefighters/new">Add Firefighter</a><% } %></div><table><tr><th>Name</th><th>Rank</th><th>Station</th><th>Status</th><th>Actions</th></tr><% firefighters.forEach(f=>{ %><tr><td><%= f.name %></td><td><%= f.rank %></td><td><%= f.station %></td><td><%= f.status %></td><td><% if(user && ['owner','pst'].includes(user.role)){ %><a class="btn" href="/firefighters/<%= f.id %>/edit">Edit</a><form method="post" action="/firefighters/<%= f.id %>/delete" style="display:inline"><button class="btn danger">Delete</button></form><% } %></td></tr><% }) %></table></section><%- include('layout-bottom') %>
+<%- include('layout-top') %>
+
+<section class="panel">
+  <div class="page-head">
+    <h1>Firefighters</h1>
+    <a class="primary-btn" href="/firefighters/new">Add Firefighter</a>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Rank</th>
+        <th>Station</th>
+        <th>Command Level</th>
+        <th>Status</th>
+        <th>Roblox ID</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% firefighters.forEach(f => { %>
+        <tr>
+          <td><%= f.name %></td>
+          <td><%= f.rank %></td>
+          <td><%= f.station || '-' %></td>
+          <td><span class="badge"><%= f.command_level || 'No Command' %></span></td>
+          <td><%= f.status %></td>
+          <td><%= f.roblox_id || '-' %></td>
+          <td>
+            <a href="/firefighters/<%= f.id %>/edit">Edit</a>
+            <form method="post" action="/firefighters/<%= f.id %>/delete" style="display:inline">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('layout-bottom') %>
