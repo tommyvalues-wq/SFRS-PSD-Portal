@@ -11,3 +11,18 @@ function next(db, table){ const id=db.counters[table] || 1; db.counters[table]=i
 function audit(actor, action, entity, entityId, details=''){ const db=load(); db.audit_log.unshift({ id: next(db,'audit_log'), actor_user_id: actor?.id || null, username: actor?.username || 'System', action, entity, entity_id: String(entityId ?? ''), details, created_at: now() }); save(db); }
 function seedOwner(){ const db=load(); const id=process.env.INITIAL_OWNER_ROBLOX_ID; if(id && !db.users.find(u=>u.roblox_id===String(id))){ db.users.push({ id: next(db,'users'), roblox_id:String(id), username:'Owner', display_name:'Owner', role:'owner', is_allowed:1, created_at:now(), updated_at:now() }); save(db); }}
 module.exports={load,save,next,now,audit,seedOwner};
+CREATE TABLE IF NOT EXISTS firefighters (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  roblox_id TEXT,
+  name TEXT NOT NULL,
+  rank TEXT NOT NULL,
+  station TEXT,
+  command_level TEXT NOT NULL DEFAULT 'No Command',
+  status TEXT NOT NULL DEFAULT 'Active',
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+try {
+  db.prepare("ALTER TABLE firefighters ADD COLUMN command_level TEXT NOT NULL DEFAULT 'No Command'").run();
+} catch (e) {}
