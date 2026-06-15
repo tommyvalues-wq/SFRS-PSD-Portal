@@ -1,9 +1,34 @@
+```ejs
 <%- include('layout-top') %>
 
 <section class="panel">
+
   <div class="page-head">
     <h1>Firefighters</h1>
-    <a class="primary-btn" href="/firefighters/new">Add Firefighter</a>
+
+    <div style="display:flex;gap:10px;align-items:center;">
+      <form method="GET" action="/firefighters">
+        <input
+          type="text"
+          name="q"
+          placeholder="Search firefighters..."
+          value="<%= q || '' %>"
+          style="padding:10px;width:300px;border-radius:6px;border:1px solid #ccc;"
+        >
+
+        <button class="primary-btn" type="submit">
+          Search
+        </button>
+
+        <a class="primary-btn" href="/firefighters">
+          Clear
+        </a>
+      </form>
+
+      <a class="primary-btn" href="/firefighters/new">
+        Add Firefighter
+      </a>
+    </div>
   </div>
 
   <table>
@@ -21,23 +46,41 @@
 
     <tbody>
       <% firefighters.forEach(f => { %>
-        <tr>
-          <td><%= f.name %></td>
-          <td><%= f.rank %></td>
-          <td><%= f.station || '-' %></td>
-          <td><span class="badge"><%= f.command_level || 'No Command' %></span></td>
-          <td><%= f.status %></td>
-          <td><%= f.roblox_id || '-' %></td>
-          <td>
-            <a href="/firefighters/<%= f.id %>/edit">Edit</a>
-            <form method="post" action="/firefighters/<%= f.id %>/delete" style="display:inline">
-              <button type="submit">Delete</button>
-            </form>
-          </td>
-        </tr>
+
+      <tr>
+        <td><%= f.name %></td>
+        <td><%= f.rank %></td>
+        <td><%= f.station || "-" %></td>
+        <td>
+          <span class="badge">
+            <%= f.command_level || "No Command" %>
+          </span>
+        </td>
+        <td><%= f.status %></td>
+        <td><%= f.roblox_id || "-" %></td>
+
+        <td>
+          <a href="/firefighters/<%= f.id %>/edit">
+            Edit
+          </a>
+
+          <form
+            method="post"
+            action="/firefighters/<%= f.id %>/delete"
+            style="display:inline;"
+          >
+            <button type="submit">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+
       <% }) %>
     </tbody>
   </table>
+
 </section>
 
 <%- include('layout-bottom') %>
+```
