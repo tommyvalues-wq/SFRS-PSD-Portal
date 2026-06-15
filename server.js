@@ -26,9 +26,55 @@ app.post('/logout',(req,res)=>req.session.destroy(()=>res.redirect('/')));
 app.get('/dashboard', requireLogin, (req,res)=>{ const db=load(); const stats={firefighters:db.firefighters.length,cases:db.disciplinary_actions.length,pst:db.users.filter(u=>['owner','pst'].includes(u.role)).length}; res.render('dashboard',{title:'Dashboard',stats,recent:db.audit_log.slice(0,8)}); });
 app.get('/firefighters', requireLogin, (req,res)=>{ const db=load(); res.render('firefighters',{title:'Firefighters', firefighters:db.firefighters.sort((a,b)=>a.name.localeCompare(b.name))}); });
 app.get('/firefighters/new', requirePST, (req,res)=>res.render('firefighter-form',{title:'Add Firefighter', f:{}}));
-app.post('/firefighters', requirePST, (req,res)=>{ const db=load(), r=req.body; const f={id:nextId(db,'firefighters'),roblox_id:r.roblox_id||'',name:r.name,rank:r.rank,station:r.station||'',status:r.status||'Active',notes:r.notes||'',created_at:now(),updated_at:now()}; db.firefighters.push(f); save(db); audit(req.user,'created','firefighter',f.id,f.name); res.redirect('/firefighters'); });
+app.post('/firefighters', requirePST, (req,res)=>{
+  const r = req.body;
+
+  const info = db.prepare(`
+    INSERT INTO firefighters
+    (roblox_id, name, rank, station, command_level, status, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    r.roblox_id,
+    r.name,
+    r.rank,
+    r.station,
+    r.command_level || 'No Command',
+    r.status,
+    r.notes
+  );
+
+  audit(req.user, 'created', 'firefighter', info.lastInsertRowid, r.name);
+  res.redirect('/firefighters');
+});
 app.get('/firefighters/:id/edit', requirePST, (req,res)=>{ const db=load(); res.render('firefighter-form',{title:'Edit Firefighter', f:db.firefighters.find(x=>x.id==req.params.id)}); });
-app.post('/firefighters/:id', requirePST, (req,res)=>{ const db=load(), r=req.body; const f=db.firefighters.find(x=>x.id==req.params.id); Object.assign(f,{roblox_id:r.roblox_id||'',name:r.name,rank:r.rank,station:r.station||'',status:r.status||'Active',notes:r.notes||'',updated_at:now()}); save(db); audit(req.user,'updated','firefighter',f.id,f.name); res.redirect('/firefighters'); });
+app.post('/firefighters/:id', requirePST, (req,res)=>{
+  const r = req.body;
+
+  db.prepare(`
+    UPDATE firefighters
+    SET roblox_id = ?,
+        name = ?,
+        rank = ?,
+        station = ?,
+        command_level = ?,
+        status = ?,
+        notes = ?,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(
+    r.roblox_id,
+    r.name,
+    r.rank,
+    r.station,
+    r.command_level || 'No Command',
+    r.status,
+    r.notes,
+    req.params.id
+  );
+
+  audit(req.user, 'updated', 'firefighter', req.params.id, r.name);
+  res.redirect('/firefighters');
+});
 app.post('/firefighters/:id/delete', requirePST, (req,res)=>{ const db=load(); db.firefighters=db.firefighters.filter(x=>x.id!=req.params.id); db.disciplinary_actions=db.disciplinary_actions.filter(x=>x.firefighter_id!=req.params.id); save(db); audit(req.user,'deleted','firefighter',req.params.id); res.redirect('/firefighters'); });
 app.get('/discipline', requirePST, (req,res)=>{ const db=load(); const cases=db.disciplinary_actions.map(c=>({...c, firefighter:(db.firefighters.find(f=>f.id==c.firefighter_id)||{}).name||'Unknown', issuer:(db.users.find(u=>u.id==c.issued_by_user_id)||{}).username||'System'})); res.render('discipline',{title:'Disciplinary Actions', cases}); });
 app.get('/discipline/new', requirePST, (req,res)=>{ const db=load(); res.render('discipline-form',{title:'Add Disciplinary Action', c:{}, firefighters:db.firefighters}); });
