@@ -1,1 +1,44 @@
-<%- include('layout-top') %><section class="page"><div class="card"><h2><%= title %></h2><form method="post" action="<%= f.id ? '/firefighters/'+f.id : '/firefighters' %>"><label>Roblox ID</label><input name="roblox_id" value="<%= f.roblox_id || '' %>"><label>Name</label><input name="name" required value="<%= f.name || '' %>"><label>Rank</label><input name="rank" required value="<%= f.rank || '' %>"><label>Station</label><input name="station" value="<%= f.station || '' %>"><label>Status</label><select name="status"><% ['Active','Inactive','Suspended','Dismissed'].forEach(s=>{ %><option <%= (f.status||'Active')===s?'selected':'' %>><%= s %></option><% }) %></select><label>Notes</label><textarea name="notes"><%= f.notes || '' %></textarea><button class="btn">Save</button></form></div></section><%- include('layout-bottom') %>
+<%- include('layout-top') %>
+
+<section class="panel">
+  <h1><%= title %></h1>
+
+  <form method="post" action="<%= f.id ? '/firefighters/' + f.id : '/firefighters' %>" class="form">
+    <label>Roblox ID</label>
+    <input name="roblox_id" value="<%= f.roblox_id || '' %>">
+
+    <label>Name</label>
+    <input name="name" required value="<%= f.name || '' %>">
+
+    <label>Rank</label>
+    <input name="rank" required value="<%= f.rank || '' %>">
+
+    <label>Station</label>
+    <input name="station" value="<%= f.station || '' %>">
+
+    <label>Command Level</label>
+    <select name="command_level">
+      <% ['No Command','Bronze Command','Silver Command','Gold Command'].forEach(level => { %>
+        <option value="<%= level %>" <%= (f.command_level || 'No Command') === level ? 'selected' : '' %>>
+          <%= level %>
+        </option>
+      <% }) %>
+    </select>
+
+    <label>Status</label>
+    <select name="status">
+      <% ['Active','Inactive','Suspended','Retired'].forEach(status => { %>
+        <option value="<%= status %>" <%= (f.status || 'Active') === status ? 'selected' : '' %>>
+          <%= status %>
+        </option>
+      <% }) %>
+    </select>
+
+    <label>Notes</label>
+    <textarea name="notes"><%= f.notes || '' %></textarea>
+
+    <button class="primary-btn" type="submit">Save Firefighter</button>
+  </form>
+</section>
+
+<%- include('layout-bottom') %>
