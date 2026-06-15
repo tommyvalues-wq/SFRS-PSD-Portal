@@ -1,39 +1,45 @@
-<h1 style="background:red;color:white;padding:20px;">TEST SEARCH FILE</h1>
-```ejs
 <%- include('layout-top') %>
 
 <section class="panel">
 
-  <div class="page-head">
+  <div class="page-head" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:15px;">
+
     <h1>Firefighters</h1>
 
-    <div style="display:flex;gap:10px;align-items:center;">
-      <form method="GET" action="/firefighters">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+
+      <form method="GET" action="/firefighters" style="display:flex;gap:10px;align-items:center;">
+
         <input
           type="text"
           name="q"
-          placeholder="Search firefighters..."
+          placeholder="Search by Name, Rank, Station, Roblox ID..."
           value="<%= q || '' %>"
-          style="padding:10px;width:300px;border-radius:6px;border:1px solid #ccc;"
+          style="padding:10px 14px;border-radius:8px;border:1px solid #ccc;width:300px;"
         >
 
-        <button class="primary-btn" type="submit">
+        <button type="submit" class="primary-btn">
           Search
         </button>
 
-        <a class="primary-btn" href="/firefighters">
+        <a href="/firefighters" class="primary-btn">
           Clear
         </a>
+
       </form>
 
-      <a class="primary-btn" href="/firefighters/new">
+      <a href="/firefighters/new" class="primary-btn">
         Add Firefighter
       </a>
+
     </div>
+
   </div>
 
   <table>
+
     <thead>
+
       <tr>
         <th>Name</th>
         <th>Rank</th>
@@ -43,45 +49,59 @@
         <th>Roblox ID</th>
         <th>Actions</th>
       </tr>
+
     </thead>
 
     <tbody>
+
       <% firefighters.forEach(f => { %>
 
       <tr>
+
         <td><%= f.name %></td>
+
         <td><%= f.rank %></td>
+
         <td><%= f.station || "-" %></td>
+
         <td>
           <span class="badge">
             <%= f.command_level || "No Command" %>
           </span>
         </td>
+
         <td><%= f.status %></td>
+
         <td><%= f.roblox_id || "-" %></td>
 
         <td>
+
           <a href="/firefighters/<%= f.id %>/edit">
             Edit
           </a>
 
           <form
-            method="post"
+            method="POST"
             action="/firefighters/<%= f.id %>/delete"
             style="display:inline;"
           >
+
             <button type="submit">
               Delete
             </button>
+
           </form>
+
         </td>
+
       </tr>
 
       <% }) %>
+
     </tbody>
+
   </table>
 
 </section>
 
 <%- include('layout-bottom') %>
-```
