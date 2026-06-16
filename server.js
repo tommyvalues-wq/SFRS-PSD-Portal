@@ -460,14 +460,12 @@ app.get('/audit', requirePST, (req, res) => {
     rows: db.audit_log.slice(0, 200)
   });
 });
-// Terms of Service page
 app.get('/terms', (req, res) => {
-  res.sendFile(path.join(__dirname, 'terms.html'));
+  res.render('terms', { title: 'Terms of Service' });
 });
 
-// Privacy Policy page
 app.get('/privacy', (req, res) => {
-  res.sendFile(path.join(__dirname, 'privacy.html'));
+  res.render('privacy', { title: 'Privacy Policy' });
 });
 
 app.use((err, req, res, next) => {
